@@ -85,7 +85,3 @@ foreach lib : ['user32', 'kernel32', 'gdi32', 'comctl32', 'uxtheme', 'msimg32', 
 			required: true),
 	]
 endforeach
-
-if libui_OS == 'windows' and libui_mode == 'shared' and not libui_MSVC
-	error('Sorry, but libui for Windows can currently only be built as a static library with MinGW. You will need to either build as a static library or switch to MSVC.')
-endif
