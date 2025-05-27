@@ -14,6 +14,7 @@
  * Unit test run functions.
  */
 int initRunUnitTests(void);
+int windowRunUnitTests(void);
 int sliderRunUnitTests(void);
 int spinboxRunUnitTests(void);
 int labelRunUnitTests(void);
@@ -24,6 +25,7 @@ int radioButtonsRunUnitTests(void);
 int entryRunUnitTests(void);
 int menuRunUnitTests(void);
 int progressBarRunUnitTests(void);
+int drawMatrixRunUnitTests(void);
 
 /**
  * Helper for general setup/teardown of controls embedded in a window.
@@ -37,6 +39,7 @@ int unitWindowOnClosingQuit(uiWindow *w, void *data);
 
 #define UNIT_TEST_WINDOW_WIDTH 300
 #define UNIT_TEST_WINDOW_HEIGHT 200
+#define UNIT_TEST_WINDOW_TITLE "Unit Test"
 
 /**
  * Helper for setting up the state variable used in unit tests.

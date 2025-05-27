@@ -82,6 +82,16 @@ _UI_EXTERN void uiTimer(int milliseconds, int (*f)(void *data), void *data);
 
 _UI_EXTERN void uiOnShouldQuit(int (*f)(void *data), void *data);
 
+
+/**
+ * Free the memory of a returned string.
+ *
+ * @note Every time a string is returned from the library, this method should be called.
+ *       Examples of these functions are uiWindowTitle, uiOpenFile, uiSaveFile, and uiEntryText.
+ *       It is not required for input strings, e.g. in uiWindowSetTitle.
+ *
+ * @param text The string to free memory
+ */
 _UI_EXTERN void uiFreeText(char *text);
 
 
@@ -112,6 +122,10 @@ struct uiControl {
 
 /**
  * Dispose and free all allocated resources.
+ *
+ * The platform specific APIs that actually destroy a control (and its children) are called.
+ *
+ * @note Most of the time is needed to be used directly only on the top level windows.
  *
  * @param c uiControl instance.
  * @todo Document ownership.
@@ -221,7 +235,9 @@ _UI_EXTERN void uiControlDisable(uiControl *c);
 _UI_EXTERN uiControl *uiAllocControl(size_t n, uint32_t OSsig, uint32_t typesig, const char *typenamestr);
 
 /**
- * Frees the control.
+ * Frees the memory associated with the control reference.
+ *
+ * @note This method is public only for writing custom controls.
  *
  * @param c uiControl instance.
  * @memberof uiControl
@@ -471,7 +487,7 @@ _UI_EXTERN void uiWindowSetChild(uiWindow *w, uiControl *child);
  * Returns whether or not the window has a margin.
  *
  * @param w uiWindow instance.
- * @returns `TRUE` if window has a margin, `FALSE` otherwise. [Default: `TODO`]
+ * @returns `TRUE` if window has a margin, `FALSE` otherwise. [Default: `FALSE`]
  * @memberof uiWindow
  */
 _UI_EXTERN int uiWindowMargined(uiWindow *w);
@@ -900,6 +916,42 @@ typedef struct uiTab uiTab;
 #define uiTab(this) ((uiTab *) (this))
 
 /**
+ * Returns the index of the tab selected.
+ *
+ * @param c uiTab instance.
+ * @returns Index of the tab selected
+ * @memberof uiTab
+ */
+_UI_EXTERN int uiTabSelected(uiTab *t);
+
+/**
+ * Sets the tab selected.
+ *
+ * @param c uiTab instance.
+ * @param index Index of the tab to be selected
+ * @note The @p index must be in the range [0, uiTabNumPages(t) - 1].
+ *          If out of bounds, the selection is not changed.
+ * @memberof uiTab
+ */
+_UI_EXTERN void uiTabSetSelected(uiTab *t, int index);
+
+/**
+ * Registers a callback for when a tab is selected.
+ *
+ * @param t uiTab instance.
+ * @param f Callback function.\n
+ *          @p sender Back reference to the instance that triggered the callback.\n
+ *          @p senderData User data registered with the sender instance.
+ * @param data User data to be passed to the callback.
+ *
+ * @note The callback is not triggered when calling uiTabSetSelected(),
+ * @note Only one callback can be registered at a time.
+ * @memberof uiTab
+ */
+_UI_EXTERN void uiTabOnSelected(uiTab *t,
+        void (*f)(uiTab *sender, void *senderData), void *data);
+
+/**
  * Appends a control in form of a page/tab with label.
  *
  * @param t uiTab instance.
@@ -1292,7 +1344,7 @@ typedef struct uiSeparator uiSeparator;
 #define uiSeparator(this) ((uiSeparator *) (this))
 
 /**
- * Creates a new horizontal separator.
+ * Creates a new horizontal separator to separate controls being stacked vertically.
  *
  * @returns A new uiSeparator instance.
  * @memberof uiSeparator @static
@@ -1300,7 +1352,7 @@ typedef struct uiSeparator uiSeparator;
 _UI_EXTERN uiSeparator *uiNewHorizontalSeparator(void);
 
 /**
- * Creates a new vertical separator.
+ * Creates a new vertical separator to separate controls being stacked horizontally.
  *
  * @returns A new uiSeparator instance.
  * @memberof uiSeparator @static
